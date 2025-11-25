@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PWA 示例应用001</title>
+    <title>PWA 示例应用002</title>
     <!-- PWA 必需的 meta 标签 -->
     <meta name="theme-color" content="#4a6fa5">
     <meta name="description" content="最简单的PWA应用示例，支持一键添加到桌面">
@@ -61,7 +61,11 @@
             line-height: 1.6;
         }
         
-        #installButton {
+        .install-section {
+            margin-bottom: 30px;
+        }
+        
+        .action-button {
             background-color: #4a6fa5;
             color: white;
             border: none;
@@ -70,14 +74,27 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: block; /* 默认显示 */
-            margin: 0 auto 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 10px 15px 0;
         }
         
-        #installButton:hover {
+        .action-button:hover {
             background-color: #3c5a86;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+        }
+        
+        .action-button.secondary {
+            background-color: transparent;
+            color: #4a6fa5;
+            border: 1px solid #4a6fa5;
+        }
+        
+        .action-button.secondary:hover {
+            background-color: rgba(74, 111, 165, 0.05);
         }
         
         #statusMessage {
@@ -111,33 +128,118 @@
             border: 1px solid #ef9a9a;
         }
         
-        .manual-install {
+        .installation-guide {
             margin-top: 30px;
-            padding: 20px;
+            padding: 25px;
             background-color: #f5f7fa;
             border-radius: 8px;
             text-align: left;
-            display: block; /* 默认显示 */
+            border: 1px solid #e2e8f0;
         }
         
-        .manual-install h3 {
+        .installation-guide h3 {
             color: #4a6fa5;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .manual-install ol {
+        .browser-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .browser-tab {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .browser-tab.active {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        .browser-content {
+            display: none;
+        }
+        
+        .browser-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-by-step {
             margin-left: 20px;
+        }
+        
+        .step-by-step li {
+            margin-bottom: 15px;
             line-height: 1.8;
+            position: relative;
+            padding-left: 30px;
         }
         
-        .manual-install li {
-            margin-bottom: 10px;
-        }
-        
-        .browser-icon {
+        .step-by-step li:before {
+            content: attr(data-step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            background-color: #4a6fa5;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
             font-weight: bold;
-            margin-right: 5px;
+        }
+        
+        .tip-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #4a6fa5;
+        }
+        
+        .tip-box h4 {
+            color: #4a6fa5;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .screenshot-placeholder {
+            margin: 15px 0;
+            padding: 30px 0;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            border: 1px dashed #cbd5e1;
+        }
+        
+        .screenshot-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #94a3b8;
         }
         
         .debug-info {
@@ -149,6 +251,7 @@
             text-align: left;
             color: #495057;
             display: none;
+            border: 1px solid #e2e8f0;
         }
         
         .debug-info h3 {
@@ -161,10 +264,6 @@
             margin-top: 30px;
             color: #718096;
             font-size: 0.9rem;
-        }
-        
-        .show-manual-btn {
-            display: none; /* 不再需要，因为手动安装指南默认显示 */
         }
         
         .show-debug-btn {
@@ -180,14 +279,6 @@
             margin-right: auto;
         }
         
-        .browser-specific {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #e3f2fd;
-            border-radius: 8px;
-        }
-        
         /* 响应式设计 */
         @media (max-width: 480px) {
             .container {
@@ -198,9 +289,18 @@
                 font-size: 1.8rem;
             }
             
-            #installButton {
+            .action-button {
                 width: 100%;
-                padding: 15px;
+                margin-right: 0;
+            }
+            
+            .browser-tab {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .step-by-step li {
+                padding-left: 25px;
             }
         }
     </style>
@@ -208,68 +308,203 @@
 <body>
     <div class="container">
         <h1>PWA 示例应用</h1>
-        <p>这是一个符合PWA标准的简单应用，支持一键添加到桌面。在支持的浏览器中，点击下方按钮即可将应用安装到您的设备上。</p>
+        <p>这是一个符合PWA标准的简单应用，可以添加到您的设备上，像原生应用一样使用。</p>
         
-        <button id="installButton">
-            <i>📱</i> 添加到桌面
-        </button>
+        <div class="install-section">
+            <button id="showGuideBtn" class="action-button">
+                <i>📱</i> 查看安装指南
+            </button>
+            <button id="showDebugBtn" class="action-button secondary">
+                <i>🔍</i> 显示系统信息
+            </button>
+        </div>
         
         <div id="statusMessage"></div>
         
-        <div id="manualInstall" class="manual-install">
-            <h3>安装指南</h3>
-            <p>您可以通过以下方式将应用添加到您的设备：</p>
+        <div id="installationGuide" class="installation-guide">
+            <h3>
+                <i>📲</i> 应用安装指南
+            </h3>
             
-            <ol>
-                <li>
-                    <span class="browser-icon">Chrome/Edge浏览器（桌面）：</span>
-                    点击地址栏右侧的 <strong>安装图标</strong>（看起来像一个电脑屏幕），或点击菜单按钮 → 选择"安装"选项
-                </li>
-                <li>
-                    <span class="browser-icon">Chrome浏览器（Android）：</span>
-                    点击右上角菜单按钮 → 选择"添加到主屏幕"选项
-                </li>
-                <li>
-                    <span class="browser-icon">Safari浏览器（iOS/macOS）：</span>
-                    点击分享按钮 → 选择"添加到主屏幕"选项
-                </li>
-                <li>
-                    <span class="browser-icon">Firefox浏览器：</span>
-                    点击地址栏中的 <strong>安装图标</strong>，或点击菜单按钮 → 选择"安装"选项
-                </li>
-            </ol>
-            
-            <div id="browserSpecific" class="browser-specific">
-                <!-- 根据浏览器显示特定的安装指南 -->
+            <div class="browser-tabs">
+                <div class="browser-tab active" data-browser="chrome-desktop">Chrome (桌面)</div>
+                <div class="browser-tab" data-browser="chrome-android">Chrome (Android)</div>
+                <div class="browser-tab" data-browser="safari-ios">Safari (iOS)</div>
+                <div class="browser-tab" data-browser="edge">Edge</div>
+                <div class="browser-tab" data-browser="firefox">Firefox</div>
             </div>
             
-            <p><strong>注意：</strong>确保您的浏览器支持PWA功能，并且应用是通过HTTPS协议访问的。</p>
+            <!-- Chrome 桌面版指南 -->
+            <div class="browser-content active" id="chrome-desktop">
+                <ol class="step-by-step">
+                    <li data-step="1">
+                        查看浏览器地址栏的右侧，寻找一个 <strong>安装图标</strong>（看起来像一个电脑屏幕）
+                        <div class="screenshot-placeholder">
+                            <i>🖥️</i><br>
+                            此处应有截图：Chrome地址栏中的安装图标位置
+                        </div>
+                    </li>
+                    <li data-step="2">
+                        点击这个安装图标
+                    </li>
+                    <li data-step="3">
+                        在弹出的对话框中，点击 <strong>"安装"</strong> 按钮
+                        <div class="screenshot-placeholder">
+                            <i>🖥️</i><br>
+                            此处应有截图：Chrome安装对话框
+                        </div>
+                    </li>
+                    <li data-step="4">
+                        如果地址栏中没有安装图标，可以点击浏览器右上角的 <strong>菜单按钮</strong>（三个点）
+                    </li>
+                    <li data-step="5">
+                        在菜单中寻找并点击 <strong>"安装 PWA示例应用"</strong> 选项
+                    </li>
+                </ol>
+                
+                <div class="tip-box">
+                    <h4>💡 提示</h4>
+                    <p>安装完成后，应用会在您的桌面上创建一个快捷方式，您可以像打开其他应用一样打开它。</p>
+                </div>
+            </div>
+            
+            <!-- Chrome Android版指南 -->
+            <div class="browser-content" id="chrome-android">
+                <ol class="step-by-step">
+                    <li data-step="1">
+                        点击浏览器右上角的 <strong>菜单按钮</strong>（三个点）
+                        <div class="screenshot-placeholder">
+                            <i>📱</i><br>
+                            此处应有截图：Chrome for Android菜单按钮
+                        </div>
+                    </li>
+                    <li data-step="2">
+                        在菜单中向下滚动，寻找 <strong>"添加到主屏幕"</strong> 选项
+                    </li>
+                    <li data-step="3">
+                        点击 <strong>"添加到主屏幕"</strong> 选项
+                    </li>
+                    <li data-step="4">
+                        在弹出的确认对话框中，点击 <strong>"添加"</strong> 按钮
+                        <div class="screenshot-placeholder">
+                            <i>📱</i><br>
+                            此处应有截图：添加到主屏幕确认对话框
+                        </div>
+                    </li>
+                </ol>
+                
+                <div class="tip-box">
+                    <h4>💡 提示</h4>
+                    <p>安装完成后，应用会在您的手机主屏幕上创建一个图标，您可以像打开其他应用一样打开它。</p>
+                </div>
+            </div>
+            
+            <!-- Safari iOS版指南 -->
+            <div class="browser-content" id="safari-ios">
+                <ol class="step-by-step">
+                    <li data-step="1">
+                        点击屏幕底部的 <strong>分享按钮</strong>（方形带箭头）
+                        <div class="screenshot-placeholder">
+                            <i>🍎</i><br>
+                            此处应有截图：Safari分享按钮位置
+                        </div>
+                    </li>
+                    <li data-step="2">
+                        在弹出的分享菜单中，向上滑动找到 <strong>"添加到主屏幕"</strong> 选项
+                    </li>
+                    <li data-step="3">
+                        点击 <strong>"添加到主屏幕"</strong> 选项
+                    </li>
+                    <li data-step="4">
+                        您可以修改应用名称（可选），然后点击右上角的 <strong>"添加"</strong> 按钮
+                        <div class="screenshot-placeholder">
+                            <i>🍎</i><br>
+                            此处应有截图：添加到主屏幕确认界面
+                        </div>
+                    </li>
+                </ol>
+                
+                <div class="tip-box">
+                    <h4>💡 提示</h4>
+                    <p>iOS上的Safari需要iOS 11.3或更高版本才能支持PWA功能。安装完成后，应用会在您的主屏幕上显示。</p>
+                </div>
+            </div>
+            
+            <!-- Edge浏览器指南 -->
+            <div class="browser-content" id="edge">
+                <ol class="step-by-step">
+                    <li data-step="1">
+                        查看浏览器地址栏的右侧，寻找一个 <strong>安装图标</strong>（看起来像一个电脑屏幕）
+                    </li>
+                    <li data-step="2">
+                        点击这个安装图标
+                    </li>
+                    <li data-step="3">
+                        在弹出的对话框中，点击 <strong>"安装"</strong> 按钮
+                    </li>
+                    <li data-step="4">
+                        如果地址栏中没有安装图标，可以点击浏览器右上角的 <strong>菜单按钮</strong>（三个点）
+                    </li>
+                    <li data-step="5">
+                        在菜单中寻找并点击 <strong>"应用"</strong> 选项，然后选择 <strong>"安装此站点作为应用"</strong>
+                    </li>
+                </ol>
+                
+                <div class="tip-box">
+                    <h4>💡 提示</h4>
+                    <p>Edge浏览器的PWA功能与Chrome类似，安装完成后可以在开始菜单中找到应用。</p>
+                </div>
+            </div>
+            
+            <!-- Firefox浏览器指南 -->
+            <div class="browser-content" id="firefox">
+                <ol class="step-by-step">
+                    <li data-step="1">
+                        查看浏览器地址栏的左侧，寻找一个 <strong>安装图标</strong>（看起来像一个加号）
+                    </li>
+                    <li data-step="2">
+                        点击这个安装图标
+                    </li>
+                    <li data-step="3">
+                        在弹出的对话框中，点击 <strong>"安装"</strong> 按钮
+                    </li>
+                    <li data-step="4">
+                        如果地址栏中没有安装图标，可以点击浏览器右上角的 <strong>菜单按钮</strong>（三条横线）
+                    </li>
+                    <li data-step="5">
+                        在菜单中寻找并点击 <strong>"安装"</strong> 选项
+                    </li>
+                </ol>
+                
+                <div class="tip-box">
+                    <h4>💡 提示</h4>
+                    <p>Firefox的PWA支持相对较新，确保您使用的是最新版本的Firefox浏览器。</p>
+                </div>
+            </div>
         </div>
         
         <div class="footer">
-            <p>支持的浏览器：Chrome、Edge、Safari等现代浏览器</p>
-            <button id="showDebugBtn" class="show-debug-btn">显示调试信息</button>
+            <p>支持的浏览器：Chrome、Edge、Safari、Firefox等现代浏览器</p>
         </div>
         
         <div id="debugInfo" class="debug-info">
-            <h3>调试信息</h3>
+            <h3>系统信息</h3>
             <div id="debugContent"></div>
         </div>
     </div>
 
     <script>
-        // 安装按钮和状态消息元素
-        const installButton = document.getElementById('installButton');
-        const statusMessage = document.getElementById('statusMessage');
-        const manualInstall = document.getElementById('manualInstall');
-        const debugInfo = document.getElementById('debugInfo');
+        // 元素引用
+        const showGuideBtn = document.getElementById('showGuideBtn');
         const showDebugBtn = document.getElementById('showDebugBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const installationGuide = document.getElementById('installationGuide');
+        const debugInfo = document.getElementById('debugInfo');
         const debugContent = document.getElementById('debugContent');
-        const browserSpecific = document.getElementById('browserSpecific');
         
-        // 安装事件的处理程序
-        let deferredPrompt;
-        let pwaInstallable = false;
+        // 浏览器标签和内容
+        const browserTabs = document.querySelectorAll('.browser-tab');
+        const browserContents = document.querySelectorAll('.browser-content');
         
         // 检测浏览器类型
         const browserInfo = {
@@ -280,21 +515,24 @@
             isIOS: /iPhone|iPad|iPod/.test(navigator.userAgent),
             isAndroid: /Android/.test(navigator.userAgent),
             isMac: /Macintosh/.test(navigator.userAgent),
-            isWindows: /Windows/.test(navigator.userAgent)
+            isWindows: /Windows/.test(navigator.userAgent),
+            isMobile: /iPhone|iPad|iPod|Android/.test(navigator.userAgent)
         };
         
-        // 收集调试信息
-        const debugData = {
+        // 收集系统信息
+        const systemData = {
             browser: navigator.userAgent,
             browserName: getBrowserName(),
+            browserVersion: getBrowserVersion(),
+            os: getOS(),
+            deviceType: browserInfo.isMobile ? '移动设备' : '桌面设备',
             https: window.location.protocol === 'https:',
+            screenSize: `${window.screen.width}x${window.screen.height}`,
             serviceWorker: 'serviceWorker' in navigator,
             manifest: checkManifestSupport(),
-            beforeinstallprompt: false,
             standalone: window.matchMedia('(display-mode: standalone)').matches,
             iosStandalone: window.navigator.standalone || false,
-            installed: false,
-            pwaFeatures: []
+            installed: false
         };
         
         // 获取浏览器名称
@@ -306,149 +544,62 @@
             return '未知浏览器';
         }
         
-        // 检查manifest支持（改进版）
+        // 获取浏览器版本
+        function getBrowserVersion() {
+            const userAgent = navigator.userAgent;
+            let version = '未知';
+            
+            if (browserInfo.isChrome) {
+                const match = userAgent.match(/Chrome\/(\d+)/);
+                version = match ? `Chrome ${match[1]}` : '未知版本';
+            } else if (browserInfo.isEdge) {
+                const match = userAgent.match(/Edg\/(\d+)/);
+                version = match ? `Edge ${match[1]}` : '未知版本';
+            } else if (browserInfo.isSafari) {
+                const match = userAgent.match(/Version\/(\d+)/);
+                version = match ? `Safari ${match[1]}` : '未知版本';
+            } else if (browserInfo.isFirefox) {
+                const match = userAgent.match(/Firefox\/(\d+)/);
+                version = match ? `Firefox ${match[1]}` : '未知版本';
+            }
+            
+            return version;
+        }
+        
+        // 获取操作系统
+        function getOS() {
+            if (browserInfo.isIOS) return 'iOS';
+            if (browserInfo.isAndroid) return 'Android';
+            if (browserInfo.isMac) return 'macOS';
+            if (browserInfo.isWindows) return 'Windows';
+            return '未知操作系统';
+        }
+        
+        // 检查manifest支持
         function checkManifestSupport() {
-            // 更可靠的manifest支持检测
             try {
-                // 检查manifest是否在link元素上支持
+                // 多种检测方式
                 const link = document.createElement('link');
-                if ('manifest' in link) {
-                    return true;
-                }
-                
-                // 检查是否支持Web App Manifest API
-                if ('Manifest' in window) {
-                    return true;
-                }
-                
-                // 检查是否有beforeinstallprompt事件
-                return 'onbeforeinstallprompt' in window;
+                if ('manifest' in link) return true;
+                if ('Manifest' in window) return true;
+                if ('onbeforeinstallprompt' in window) return true;
+                return false;
             } catch (e) {
                 return false;
             }
         }
         
-        // 显示浏览器特定的安装指南
-        function showBrowserSpecificGuide() {
-            let content = '';
+        // 检查是否已安装
+        function checkIfInstalled() {
+            const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+            const isIOSInstalled = window.navigator.standalone;
             
-            if (browserInfo.isChrome) {
-                if (browserInfo.isAndroid) {
-                    content = `
-                        <p><strong>Chrome (Android) 安装提示：</strong></p>
-                        <p>1. 点击浏览器右上角的三个点菜单按钮</p>
-                        <p>2. 找到并点击"添加到主屏幕"选项</p>
-                        <p>3. 在弹出的对话框中点击"添加"按钮</p>
-                    `;
-                } else if (browserInfo.isMac || browserInfo.isWindows) {
-                    content = `
-                        <p><strong>Chrome (桌面) 安装提示：</strong></p>
-                        <p>1. 查看地址栏右侧是否有一个电脑屏幕图标</p>
-                        <p>2. 点击该图标，然后点击"安装"按钮</p>
-                        <p>3. 如果没有图标，点击菜单按钮，选择"安装 PWA示例应用"</p>
-                    `;
-                }
-            } else if (browserInfo.isSafari && browserInfo.isIOS) {
-                content = `
-                    <p><strong>Safari (iOS) 安装提示：</strong></p>
-                    <p>1. 点击底部的分享按钮（方形带箭头）</p>
-                    <p>2. 向上滑动找到"添加到主屏幕"选项</p>
-                    <p>3. 点击"添加"按钮完成安装</p>
-                `;
-            } else if (browserInfo.isFirefox) {
-                content = `
-                    <p><strong>Firefox 安装提示：</strong></p>
-                    <p>1. 查看地址栏左侧是否有一个安装图标</p>
-                    <p>2. 点击该图标，然后点击"安装"按钮</p>
-                    <p>3. 如果没有图标，点击菜单按钮，选择"安装"</p>
-                `;
-            }
+            systemData.standalone = isInStandaloneMode;
+            systemData.iosStandalone = isIOSInstalled;
+            systemData.installed = isInStandaloneMode || isIOSInstalled;
             
-            if (content) {
-                browserSpecific.innerHTML = content;
-                browserSpecific.style.display = 'block';
-            }
+            return systemData.installed;
         }
-        
-        // 显示调试信息
-        function updateDebugInfo() {
-            let html = `
-                <p><strong>浏览器：</strong>${debugData.browserName} (${debugData.browser})</p>
-                <p><strong>HTTPS连接：</strong>${debugData.https ? '是 ✅' : '否 ❌ (PWA需要HTTPS)'}</p>
-                <p><strong>Service Worker支持：</strong>${debugData.serviceWorker ? '是 ✅' : '否 ❌'}</p>
-                <p><strong>Manifest支持：</strong>${debugData.manifest ? '是 ✅' : '否 ❌'}</p>
-                <p><strong>beforeinstallprompt事件：</strong>${debugData.beforeinstallprompt ? '触发 ✅' : '未触发 ❌'}</p>
-                <p><strong>已安装为PWA：</strong>${debugData.installed ? '是 ✅' : '否 ❌'}</p>
-                <p><strong>PWA可安装：</strong>${pwaInstallable ? '是 ✅' : '否 ❌'}</p>
-            `;
-            
-            if (debugData.pwaFeatures.length > 0) {
-                html += `<p><strong>PWA功能：</strong>${debugData.pwaFeatures.join(', ')}</p>`;
-            }
-            
-            // 添加额外的诊断信息
-            html += `<p><strong>浏览器特定信息：</strong></p>`;
-            html += `<ul>`;
-            html += `<li>移动设备：${browserInfo.isIOS || browserInfo.isAndroid ? '是' : '否'}</li>`;
-            html += `<li>iOS设备：${browserInfo.isIOS ? '是' : '否'}</li>`;
-            html += `<li>Android设备：${browserInfo.isAndroid ? '是' : '否'}</li>`;
-            html += `</ul>`;
-            
-            debugContent.innerHTML = html;
-        }
-        
-        // 监听 beforeinstallprompt 事件
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // 阻止浏览器默认的安装提示
-            e.preventDefault();
-            // 保存事件，以便稍后触发
-            deferredPrompt = e;
-            // 标记为可安装
-            pwaInstallable = true;
-            debugData.beforeinstallprompt = true;
-            
-            showMessage('应用可以安装到您的设备上', 'info');
-            updateDebugInfo();
-        });
-        
-        // 安装按钮点击事件
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                // 显示安装提示
-                deferredPrompt.prompt();
-                
-                // 等待用户选择
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                if (outcome === 'accepted') {
-                    showMessage('应用已成功添加到您的设备！', 'success');
-                    debugData.installed = true;
-                } else {
-                    showMessage('您选择了暂不安装应用', 'info');
-                }
-                
-                // 重置 deferredPrompt
-                deferredPrompt = null;
-                
-                updateDebugInfo();
-            } else {
-                // 如果没有deferredPrompt，尝试使用备用方法或显示手动指南
-                if (browserInfo.isSafari && browserInfo.isIOS) {
-                    showMessage('请点击底部的分享按钮，然后选择"添加到主屏幕"', 'info');
-                } else if (browserInfo.isChrome) {
-                    showMessage('请点击浏览器菜单，然后选择"添加到主屏幕"或"安装"选项', 'info');
-                } else {
-                    showMessage('请查看下方的安装指南进行手动安装', 'info');
-                }
-            }
-        });
-        
-        // 监听应用安装完成事件
-        window.addEventListener('appinstalled', () => {
-            showMessage('应用已成功安装到您的设备！', 'success');
-            debugData.installed = true;
-            updateDebugInfo();
-        });
         
         // 显示状态消息
         function showMessage(message, type = 'info') {
@@ -462,146 +613,124 @@
             }, 5000);
         }
         
-        // 检查是否已经安装了应用
-        function checkIfInstalled() {
-            // PWA 安装检测（不同浏览器有不同的检测方式）
-            const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
-            const isIOSInstalled = window.navigator.standalone;
+        // 显示系统信息
+        function showSystemInfo() {
+            let html = `
+                <div class="system-info-grid">
+                    <p><strong>浏览器：</strong>${systemData.browserName} (${systemData.browserVersion})</p>
+                    <p><strong>操作系统：</strong>${systemData.os}</p>
+                    <p><strong>设备类型：</strong>${systemData.deviceType}</p>
+                    <p><strong>屏幕分辨率：</strong>${systemData.screenSize}</p>
+                    <p><strong>HTTPS连接：</strong>${systemData.https ? '是 ✅' : '否 ❌ (PWA需要HTTPS)'}</p>
+                    <p><strong>Service Worker支持：</strong>${systemData.serviceWorker ? '是 ✅' : '否 ❌'}</p>
+                    <p><strong>Manifest支持：</strong>${systemData.manifest ? '是 ✅' : '否 ❌'}</p>
+                    <p><strong>已安装为应用：</strong>${systemData.installed ? '是 ✅' : '否 ❌'}</p>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <p><strong>完整用户代理字符串：</strong></p>
+                    <p style="font-family: monospace; font-size: 0.8rem; word-break: break-all;">${systemData.browser}</p>
+                </div>
+            `;
             
-            debugData.standalone = isInStandaloneMode;
-            debugData.iosStandalone = isIOSInstalled;
-            debugData.installed = isInStandaloneMode || isIOSInstalled;
-            
-            if (isInStandaloneMode || isIOSInstalled) {
-                showMessage('应用已安装在您的设备上', 'info');
-            }
-            
-            updateDebugInfo();
+            debugContent.innerHTML = html;
         }
         
-        // 检查PWA功能支持
-        function checkPWAFeatures() {
-            if ('serviceWorker' in navigator) {
-                debugData.pwaFeatures.push('Service Worker');
+        // 自动选择适合的浏览器标签
+        function autoSelectBrowserTab() {
+            if (browserInfo.isChrome) {
+                if (browserInfo.isAndroid) {
+                    selectBrowserTab('chrome-android');
+                } else {
+                    selectBrowserTab('chrome-desktop');
+                }
+            } else if (browserInfo.isEdge) {
+                selectBrowserTab('edge');
+            } else if (browserInfo.isSafari) {
+                selectBrowserTab('safari-ios');
+            } else if (browserInfo.isFirefox) {
+                selectBrowserTab('firefox');
             }
-            if ('PushManager' in window) {
-                debugData.pwaFeatures.push('推送通知');
-            }
-            if ('CacheStorage' in window) {
-                debugData.pwaFeatures.push('缓存存储');
-            }
-            if ('showNotification' in ServiceWorkerRegistration.prototype) {
-                debugData.pwaFeatures.push('通知');
-            }
-            
-            // 检查更多PWA相关API
-            if ('getInstalledRelatedApps' in navigator) {
-                debugData.pwaFeatures.push('应用关联检测');
-            }
-            if ('share' in navigator) {
-                debugData.pwaFeatures.push('Web分享');
-            }
-            if ('PaymentRequest' in window) {
-                debugData.pwaFeatures.push('Web支付');
-            }
-            
-            updateDebugInfo();
         }
         
-        // 检查manifest是否加载成功
-        function checkManifestLoaded() {
-            return new Promise((resolve) => {
-                const manifestLink = document.getElementById('manifestLink');
-                
-                // 监听manifest加载事件
-                manifestLink.addEventListener('load', () => {
-                    console.log('Manifest 加载成功');
-                    resolve(true);
-                });
-                
-                // 监听manifest错误事件
-                manifestLink.addEventListener('error', () => {
-                    console.log('Manifest 加载失败');
-                    resolve(false);
-                });
-                
-                // 如果5秒后仍未加载，认为失败
-                setTimeout(() => {
-                    console.log('Manifest 加载超时');
-                    resolve(false);
-                }, 5000);
+        // 选择浏览器标签
+        function selectBrowserTab(browserId) {
+            browserTabs.forEach(tab => {
+                if (tab.dataset.browser === browserId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            browserContents.forEach(content => {
+                if (content.id === browserId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
             });
         }
         
-        // 页面加载完成后检查安装状态
-        window.addEventListener('load', async () => {
-            // 显示浏览器特定的安装指南
-            showBrowserSpecificGuide();
-            
-            // 显示调试信息
-            updateDebugInfo();
-            checkPWAFeatures();
-            
-            // 检查是否已安装
-            checkIfInstalled();
-            
-            // 检查manifest是否加载成功
-            const manifestLoaded = await checkManifestLoaded();
-            if (manifestLoaded) {
-                debugData.pwaFeatures.push('Manifest已加载');
-            } else {
-                showMessage('Manifest文件加载失败，可能影响PWA功能', 'warning');
-            }
-            
-            // 检查manifest支持
-            debugData.manifest = checkManifestSupport();
-            
-            // 如果未安装且beforeinstallprompt事件未触发，显示警告
-            setTimeout(() => {
-                if (!debugData.installed && !debugData.beforeinstallprompt) {
-                    // 根据浏览器类型显示不同的提示
-                    if (browserInfo.isSafari && browserInfo.isIOS) {
-                        showMessage('请使用分享菜单中的"添加到主屏幕"功能安装应用', 'info');
-                    } else if (browserInfo.isChrome || browserInfo.isEdge) {
-                        showMessage('请点击浏览器菜单中的"安装"或"添加到主屏幕"选项', 'info');
-                    } else {
-                        showMessage('浏览器可能不支持自动安装提示，请尝试手动安装', 'info');
-                    }
-                }
-            }, 2000);
-            
-            // 注册 Service Worker
+        // 注册Service Worker
+        function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.register('service-worker.js');
-                    console.log('Service Worker 注册成功:', registration.scope);
-                    debugData.pwaFeatures.push('Service Worker已注册');
-                    
-                    // 检查Service Worker是否激活
-                    if (registration.active) {
-                        debugData.pwaFeatures.push('Service Worker已激活');
-                    }
-                } catch (error) {
-                    console.log('Service Worker 注册失败:', error);
-                    showMessage('Service Worker 注册失败: ' + error.message, 'error');
-                }
-            } else {
-                showMessage('您的浏览器不支持Service Worker，无法使用PWA功能', 'error');
+                navigator.serviceWorker.register('service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker 注册失败:', error);
+                    });
             }
+        }
+        
+        // 页面加载完成后执行
+        window.addEventListener('load', () => {
+            // 检查是否已安装
+            const isInstalled = checkIfInstalled();
+            
+            if (isInstalled) {
+                showMessage('应用已安装在您的设备上！', 'success');
+                showGuideBtn.textContent = '打开应用';
+                showGuideBtn.addEventListener('click', () => {
+                    showMessage('应用已安装，请从主屏幕或应用列表中打开', 'info');
+                });
+            } else {
+                // 自动选择适合的浏览器标签
+                autoSelectBrowserTab();
+                
+                // 显示安装指南
+                installationGuide.style.display = 'block';
+            }
+            
+            // 注册Service Worker
+            registerServiceWorker();
             
             // 检查HTTPS
             if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
                 showMessage('PWA功能需要通过HTTPS连接才能正常工作', 'error');
             }
             
-            // 更新调试信息
-            updateDebugInfo();
-        });
-        
-        // 显示/隐藏调试信息
-        showDebugBtn.addEventListener('click', () => {
-            debugInfo.style.display = debugInfo.style.display === 'block' ? 'none' : 'block';
-            updateDebugInfo();
+            // 浏览器标签点击事件
+            browserTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    selectBrowserTab(tab.dataset.browser);
+                });
+            });
+            
+            // 显示/隐藏系统信息
+            showDebugBtn.addEventListener('click', () => {
+                debugInfo.style.display = debugInfo.style.display === 'block' ? 'none' : 'block';
+                if (debugInfo.style.display === 'block') {
+                    showSystemInfo();
+                }
+            });
+            
+            // 查看安装指南按钮点击事件
+            showGuideBtn.addEventListener('click', () => {
+                installationGuide.style.display = installationGuide.style.display === 'block' ? 'none' : 'block';
+            });
         });
     </script>
 </body>
