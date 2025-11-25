@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA 示例应用</title>
+    <!-- PWA 必需的 meta 标签 -->
+    <meta name="theme-color" content="#4a6fa5">
+    <meta name="description" content="最简单的PWA应用示例，支持一键添加到桌面">
+    <!-- 引入 manifest.json -->
+    <link rel="manifest" href="manifest.json">
+    <!-- 添加到主屏幕时的图标 -->
+    <link rel="icon" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f4f8;
+            color: #2d3748;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #4a6fa5;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        #installButton {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none; /* 默认隐藏，仅当支持安装时显示 */
+        }
+        
+        #installButton:hover {
+            background-color: #3c5a86;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+        }
+        
+        #statusMessage {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .success {
+            background-color: #e6fffa;
+            color: #00796b;
+            border: 1px solid #b2dfdb;
+        }
+        
+        .info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            #installButton {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PWA 示例应用</h1>
+        <p>这是一个符合PWA标准的简单应用，支持一键添加到桌面。在支持的浏览器中，点击下方按钮即可将应用安装到您的设备上。</p>
+        
+        <button id="installButton">
+            <i>📱</i> 添加到桌面
+        </button>
+        
+        <div id="statusMessage"></div>
+        
+        <div class="footer">
+            <p>支持的浏览器：Chrome、Edge、Safari等现代浏览器</p>
+        </div>
+    </div>
+
+    <script>
+        // 安装按钮和状态消息元素
+        const installButton = document.getElementById('installButton');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        // 安装事件的处理程序
+        let deferredPrompt;
+        
+        // 监听 beforeinstallprompt 事件
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // 阻止浏览器默认的安装提示
+            e.preventDefault();
+            // 保存事件，以便稍后触发
+            deferredPrompt = e;
+            // 显示安装按钮
+            installButton.style.display = 'block';
+            
+            showMessage('应用可以安装到您的设备上', 'info');
+        });
+        
+        // 安装按钮点击事件
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // 显示安装提示
+                deferredPrompt.prompt();
+                
+                // 等待用户选择
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    showMessage('应用已成功添加到您的设备！', 'success');
+                } else {
+                    showMessage('您选择了暂不安装应用', 'info');
+                }
+                
+                // 重置 deferredPrompt
+                deferredPrompt = null;
+                // 隐藏安装按钮
+                installButton.style.display = 'none';
+            }
+        });
+        
+        // 监听应用安装完成事件
+        window.addEventListener('appinstalled', () => {
+            showMessage('应用已成功安装到您的设备！', 'success');
+            // 隐藏安装按钮
+            installButton.style.display = 'none';
+        });
+        
+        // 显示状态消息
+        function showMessage(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.className = type;
+            statusMessage.style.display = 'block';
+            
+            // 3秒后自动隐藏消息
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 检查是否已经安装了应用
+        function checkIfInstalled() {
+            // PWA 安装检测（不同浏览器有不同的检测方式）
+            const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+            const isIOSInstalled = window.navigator.standalone;
+            
+            if (isInStandaloneMode || isIOSInstalled) {
+                showMessage('应用已安装在您的设备上', 'info');
+                installButton.style.display = 'none';
+            }
+        }
+        
+        // 页面加载完成后检查安装状态
+        window.addEventListener('load', () => {
+            // 注册 Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker 注册失败:', error);
+                    });
+            }
+            
+            // 检查应用是否已安装
+            checkIfInstalled();
+        });
+    </script>
+</body>
+</html>
